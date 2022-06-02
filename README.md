@@ -1,2 +1,2 @@
 # Multiplatform_Notes_Web
-Web extension to Note4G note taking application
+Web extension to Note4G note taking application.
