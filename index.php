@@ -39,6 +39,29 @@
 
         <?php
         include "connectionToDB.php";
+        session_start();
+        if (isset($_SESSION["username"])){
+            $user = $_SESSION['username'];
+            $querry = "SELECT * FROM users WHERE (username = '$user')";
+            $values = [':username'=>$username];
+            try{
+                $res = $connection->prepare($querry);
+                $res->execute();
+            } catch(PDOException $e){
+                echo "Querry error!";
+                die();
+            }
+            $row = $res->fetch(PDO::FETCH_ASSOC);
+            if(is_array($row)){
+                if ($_SESSION["user_pass"] == $row['password']){
+                    header("Location: main.php"); 
+                    echo "user logged in!";
+                } else {
+                    session_unset();
+                }
+            }
+
+        }
         if (isset($_POST['submit'])) {
             $login = FALSE; 
             $username = $_POST["username"];
@@ -57,6 +80,10 @@
             if(is_array($row)){
                 if(password_verify($password, $row['password'])){ // password_verify, jo registracijas mirklī lietotājam paroles tiek hashotas 
                     $login = TRUE;
+                    $_SESSION["username"] = $username;
+                    $_SESSION["user_id"] = $row['id'];
+                    $_SESSION["user_email"] = $row['email'];
+                    $_SESSION["user_pass"] = $row['password'];
                     header("Location: main.php"); 
                     echo "user logged in!";
                 }else{
