@@ -80,15 +80,27 @@
         $checkUsername = "SELECT * FROM users WHERE username = '$username';";
         $checkEmail = "SELECT * FROM users WHERE email = '$email';";
         $addNewUser = "INSERT INTO users(username, email, password) VALUES ('$username', '$email', '$hash');";
-            $checUsernameRes = $connection->prepare($checkUsername);
-            $checUsernameRes->execute();
-            $checkUsernameRow = $checUsernameRes->fetch(PDO::FETCH_ASSOC);
+        $getUserIdSQL = "SELECT id FROM users WHERE username = '$username';"; 
+        $registerNewGroupSQL = "INSERT INTO sql11496494.groups(owner, group_name) VALUES (?, 'Default')";
+            $checkUsernameRes = $connection->prepare($checkUsername);
+            $checkUsernameRes->execute();
+            $checkUsernameRow = $checkUsernameRes->fetch(PDO::FETCH_ASSOC);
             $checkEmailRes = $connection->prepare($checkEmail);
             $checkEmailRes->execute();
             $checkEmailRow = $checkEmailRes->fetch(PDO::FETCH_ASSOC); 
             if(!$checkUsernameRow && !$checkEmailRow){ // katram no pārbaudēm jeb selectiem nav rezultāts, tapēc var reģistrēt lietotāju
-              #  $addUser = $connection ->prepare($addNewUser);
-               # $addUser->execute(); 
+                $addUser = $connection ->prepare($addNewUser);
+                $addUser->execute();
+               
+                $getId = $connection ->prepare($getUserIdSQL);
+                $getId->execute(); 
+                $id = $getId ->fetch(PDO::FETCH_ASSOC);
+
+                $addGroupUser = $connection -> prepare($registerNewGroupSQL);
+                $addGroupUser -> bindParam(1, $id['id'],PDO::PARAM_INT);
+                $addGroupUser->execute(); 
+                
+
                 ?>
                 <div class="alert alert-success text-center" role="alert">
                     <h4 class="alert-heading">Account registered!</h4>

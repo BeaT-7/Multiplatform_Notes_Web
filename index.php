@@ -87,6 +87,13 @@
                         $_SESSION["user_email"] = $row['email'];
                         $_SESSION["user_pass"] = $row['password'];
                         header("Location: main.php"); 
+                    }else{
+                        ?>
+                    <div class="alert alert-danger text-center" role="alert">
+                    <h4 class="alert-heading">Something is wrong!</h4>
+                    <p>Username and / or password is incorrect! Try again!</p>
+                </div>
+                <?php
                     }
                 }else{
                     ?>
