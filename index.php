@@ -20,7 +20,7 @@
                             <h3 class="text-dark fw-bold">SIGN IN</h3>
                         </div>
                         <form action="" method = "POST">
-                            <div class="p-4">
+                            <div class="p-4 text-center">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text bg-dark"><i
                                             class="bi bi-person-plus-fill text-white"></i></span>
@@ -32,10 +32,10 @@
                                 </div>
                                 <button class="btn btn-dark text-center mt-2"  name = "submit" type="submit">Login</button>
                                 <button class="btn btn-dark text-center mt-2" name = "register" type="submit">Register</button>
+                                <?php echo "</br>" ?>
+                                <?php echo "</br>" ?>
                                 
-                </div>
-            </div>
-        </div>
+            
 
         <?php
         include "connectionToDB.php";
@@ -76,19 +76,33 @@
                 die();
             }
             $row = $res->fetch(PDO::FETCH_ASSOC);
-            if(is_array($row)){
-                if(password_verify($password, $row['password'])){ // password_verify, jo registracijas mirklī lietotājam paroles tiek hashotas 
-                    $login = TRUE;
-                    $_SESSION["username"] = $username;
-                    $_SESSION["user_id"] = $row['id'];
-                    $_SESSION["user_email"] = $row['email'];
-                    $_SESSION["user_pass"] = $row['password'];
-                    header("Location: main.php"); 
-                    echo "user logged in!";
+            if($username != "" && $password != ""){
+
+            
+                if(is_array($row)){
+                    if(password_verify($password, $row['password'])){ // password_verify, jo registracijas mirklī lietotājam paroles tiek hashotas 
+                        $login = TRUE;
+                        $_SESSION["username"] = $username;
+                        $_SESSION["user_id"] = $row['id'];
+                        $_SESSION["user_email"] = $row['email'];
+                        $_SESSION["user_pass"] = $row['password'];
+                        header("Location: main.php"); 
+                    }
                 }else{
-                    echo $row['password'];
-                    echo password_verify($password, $row['password']);
+                    ?>
+                    <div class="alert alert-danger text-center" role="alert">
+                    <h4 class="alert-heading">Something is wrong!</h4>
+                    <p>Username and / or password is incorrect! Try again!</p>
+                </div>
+                <?php
                 }
+            }else{
+                ?>
+                        <div class="alert alert-danger text-center" role="alert">
+                        <h4 class="alert-heading">Something is wrong!</h4>
+                        <p>Please enter Your username and password!</p>
+                    </div>
+                    <?php
             }
 
         }
@@ -98,6 +112,9 @@
 
 
         ?>
+            </div>
+            </div>
+        </div>
     </body>
 
 </html>
