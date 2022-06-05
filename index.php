@@ -43,7 +43,6 @@
         if (isset($_SESSION["username"])){
             $user = $_SESSION['username'];
             $querry = "SELECT * FROM users WHERE (username = '$user')";
-            $values = [':username'=>$username];
             try{
                 $res = $connection->prepare($querry);
                 $res->execute();
