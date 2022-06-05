@@ -6,6 +6,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Multiplatform Notes
         </title>
+        <script type="text/javascript" src="//js.nicedit.com/nicEdit-latest.js"></script> 
+        <script type="text/javascript">
+            bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+        </script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
@@ -101,16 +105,23 @@
     // !!pagaidu!! - dabū piezīmes ID, kad uz tās uzspiež
     if (isset($_POST["Note"])){
         echo $_POST["id_note"];
+        echo '<style type="text/css">
+        #editor {
+            display: block;
+        }
+        </style>';
     }
     ?>
 
 <body>
     <!-- navigation bar -->
     <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid">
+        <div class="d-flex container-fluid">
             <button class="btn btn-dark border border-light text-center mt-2 mx-2" onclick="openForm()">New Group</button>
             <button class="btn btn-dark border border-light text-center mt-2 mx-2" onclick="openFormNote()">New Note</button>
-            <button class="btn btn-dark border border-light text-center mt-2 ms-auto"  name = "logout" type="submit">Log out!</button>
+            <form action="" method="post" class="ms-auto">
+                <button class="btn btn-dark border border-light text-center mt-2"  name = "logout" type="submit">Log out!</button>
+            </form>
         </div>
     </nav>
 
@@ -128,9 +139,9 @@
                     // creates buttons for each note in it's group
                     for ($j = 0; $j < count($groups[$i][3]); $j++){
                         ?>
-                        <form action="" method="post">
+                        <form method="post">
                             <input type="hidden" name="id_note" value="<?php echo $groups[$i][3][$j][0] ?>" />
-                            <button class="btn btn-dark border border-light text-center noteBtn"  name = "Note" type="submit"><?php echo $groups[$i][3][$j][2] ?></button>
+                            <button class="btn btn-dark border border-light text-center noteBtn" name = "Note"><?php echo $groups[$i][3][$j][2] ?></button>
                         </form>
                         <?php
                     }
@@ -155,6 +166,7 @@
                     <label for="group" class="popupLabel"><b>Add To Group:</b></label>
                     <select name="groupSelect" class="mb-4">
                         <?php
+                        echo $groups[0][3][0][3];
                         foreach ($groups as $group){
                             ?><option value="<?php echo $group[0] ?>"><?php echo $group[2] ?></option><?php
                         }
@@ -163,7 +175,19 @@
                     <button type="submit" name="newNote" class="btn">Create</button>
                 </form>
             </div>
+            <div class="form-popup-editor" id="editor">
+                <form action="" class="form-container-editor" method="post">
+                    <textarea name="editor" class="textEditor" value> <?php echo $groups[0][3][0][3]; ?> </textarea>
+                    <button type="submit" name="saveText" class="btn border-dark">Save</button>
+                </form>
+            </div>
             
+
+            <?php
+            if (isset($_POST["saveText"])){
+                echo $_POST["area1"];
+            }
+            ?>
 
 
             <script>
@@ -184,6 +208,7 @@
                     document.getElementById("newNote").style.display = "block";
                 }   
             }
+
             </script>
         </div>
 

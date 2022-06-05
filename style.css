@@ -18,7 +18,16 @@
     z-index: 9;
     background-color: rgb(61, 61, 61);
   }
-  
+  .form-popup-editor {
+    display: none;
+    position: fixed;
+    top: 2%;
+    left: 2%;
+    border: 3px solid #000000;
+    z-index: 9;
+    background-color: rgb(255, 255, 255);
+  }
+
   /* Add styles to the form container */
   .form-container {
     max-width: 300px;
@@ -27,6 +36,14 @@
   }
   .popupLabel{
     color: rgb(250, 250, 250);
+  }
+  .form-container-editor {
+    padding: 10px;
+    background-color: rgb(255, 255, 255);
+  }
+  .textEditor{
+    width: 1200px;
+    height: 1800px;
   }
   
   /* Full-width input fields */
