@@ -9,26 +9,184 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+        <link rel="stylesheet" type="text/css" href="style.css">
     </head>
-
-    <body>
-        <nav class="navbar navbar-dark bg-dark">
-            <div class="container-fluid">
-                <form class="ms-auto" action="" method = "POST">
-                    <button class="btn btn-dark border border-light text-center mt-2"  name = "logout" type="submit">Log out!</button>
-
-            </div>
-        </nav>
-
-
-    </body>
     <?php
     session_start();
+    include "connectionToDB.php";
+    // $groups structure = Groups(Group(ID, owner, group_name, notes(note(id, group, note_name, text), note(id, group, note_name, text))), Group(...))
+    $groups = array();
+    // gets all groups and notes on page load
+    getAllGroups($connection, $_SESSION["user_id"]);
+    getAllNotes($connection);
+    
+    // log out button
     if (isset($_POST["logout"])){
         session_unset();
         header("Location: index.php");
     }
 
+    // gets all groups and adds them to array
+    function getAllGroups(PDO $connection, int $id) {
+        global $groups;
+        $sql = "SELECT * FROM sql11496494.groups WHERE (owner = '$id')";
+        try{
+            $res = $connection->prepare($sql);
+            $res->execute();
+        }catch(PDOException $e){
+            echo "Querry error!";
+            die();
+        }
+        $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $row) {
+            $array = array($row['ID'], $row['owner'], $row['group_name'], array());
+            array_push($groups, $array);
+        }
+    }
+
+    // gets all notes and inserts them in their groups
+    function getAllNotes(PDO $connection){
+        global $groups;
+        for ($i = 0; $i < count($groups); $i++){
+            $id = $groups[$i][0];
+            $sql = "SELECT * FROM sql11496494.notes WHERE notes.group = $id";
+            try{
+                $res = $connection->prepare($sql);
+                $res->execute();
+            }catch(PDOException $e){
+                echo "Querry error!";
+                die();
+            }
+            $rows = $res->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row){
+                $array = array($row["ID"], $row["group"], $row["note_name"], $row["text"]);
+                array_push($groups[$i][3], $array);
+            }
+        }
+    }
+
+    // creates new group
+    if (isset($_POST["newGroup"])){
+        $groupName = $_POST["groupName"];
+        $id = $_SESSION["user_id"];
+        if (strlen($groupName) < 30 && strlen($groupName) > 2){
+            $sql = "INSERT INTO sql11496494.groups(owner, group_name) VALUES ('$id', '$groupName')";
+            try{
+                $connection->exec($sql);
+            }catch(PDOException $e){
+                echo "Querry error!";
+                die();
+            }
+            header("Location: main.php");
+        }
+    }
+
+    // creates new note
+    if (isset($_POST["newNote"])){
+        $noteName = $_POST["noteName"];
+        $groupID = $_POST["groupSelect"];
+        if (strlen($noteName) < 30 && strlen($noteName) > 2){
+            $sql = "INSERT INTO sql11496494.notes(notes.group, note_name, text) VALUES ('$groupID', '$noteName', '')";
+            try{
+                $connection->exec($sql);
+            }catch(PDOException $e){
+                echo "Querry error!";
+                die();
+            }
+            header("Location: main.php");
+        }
+    }
+
+
+    // !!pagaidu!! - dabū piezīmes ID, kad uz tās uzspiež
+    if (isset($_POST["Note"])){
+        echo $_POST["id_note"];
+    }
     ?>
+
+<body>
+    <!-- navigation bar -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <button class="btn btn-dark border border-light text-center mt-2 mx-2" onclick="openForm()">New Group</button>
+            <button class="btn btn-dark border border-light text-center mt-2 mx-2" onclick="openFormNote()">New Note</button>
+            <button class="btn btn-dark border border-light text-center mt-2 ms-auto"  name = "logout" type="submit">Log out!</button>
+        </div>
+    </nav>
+
+        <div>
+            <?php
+            // Group and note displaying
+            for ($i = 0; $i < count($groups); $i++){
+                ?>
+                <!-- creates labels for each group -->
+                <div class="border border-dark border-3 bg-light groupLabel d-flex">
+                    <h4><?php echo $groups[$i][2] ?></h4>
+                </div>
+
+                <div class="d-flex container-fluid"><?php
+                    // creates buttons for each note in it's group
+                    for ($j = 0; $j < count($groups[$i][3]); $j++){
+                        ?>
+                        <form action="" method="post">
+                            <input type="hidden" name="id_note" value="<?php echo $groups[$i][3][$j][0] ?>" />
+                            <button class="btn btn-dark border border-light text-center noteBtn"  name = "Note" type="submit"><?php echo $groups[$i][3][$j][2] ?></button>
+                        </form>
+                        <?php
+                    }
+                ?></div><?php
+            }
+            
+            ?>
+            <!-- new group pop up window -->
+            <div class="form-popup" id="myForm">
+                <form action="" class="form-container" method="post">
+                    <label for="groupName" class="popupLabel"><b>New Group Name:</b></label>
+                    <input type="text" placeholder="Enter New Group Name" name="groupName" required>
+    
+                    <button type="submit" name="newGroup" class="btn">Create</button>
+                </form>
+            </div>
+            <!-- new note pop up window -->
+            <div class="form-popup-note" id="newNote">
+                <form action="" class="form-container" method="post">
+                    <label for="noteName" class="popupLabel"><b>New Note Name:</b></label>
+                    <input type="text" placeholder="Enter New Note Name" name="noteName" required>
+                    <label for="group" class="popupLabel"><b>Add To Group:</b></label>
+                    <select name="groupSelect" class="mb-4">
+                        <?php
+                        foreach ($groups as $group){
+                            ?><option value="<?php echo $group[0] ?>"><?php echo $group[2] ?></option><?php
+                        }
+                        ?>
+                    </select>
+                    <button type="submit" name="newNote" class="btn">Create</button>
+                </form>
+            </div>
+            
+
+
+            <script>
+            // pop up window functions for hiding or showing them
+            function openForm() { // new group pop up
+                if (document.getElementById("myForm").style.display == "block") {
+                    document.getElementById("myForm").style.display = "none";
+                } else {
+                    document.getElementById("newNote").style.display = "none";
+                    document.getElementById("myForm").style.display = "block";
+                }   
+            }
+            function openFormNote() { // new note pop up
+                if (document.getElementById("newNote").style.display == "block") {
+                    document.getElementById("newNote").style.display = "none";
+                } else {
+                    document.getElementById("myForm").style.display = "none";
+                    document.getElementById("newNote").style.display = "block";
+                }   
+            }
+            </script>
+        </div>
+
+    </body>
 
 </html>
