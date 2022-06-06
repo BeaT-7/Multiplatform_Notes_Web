@@ -42,6 +42,7 @@
                                     <input type="password" class="form-control" name="password_conf" placeholder="confirm password" required>
                                     
                                 </div>
+                                <button class="btn btn-dark mt-2" name = "login" type="submit" formnovalidate>Login</button>
                                 <button class="btn btn-dark mt-2" name = "register" type="submit">Register</button>
                                 <?php echo "</br>" ?>
                                 <?php echo "</br>" ?>
@@ -50,6 +51,9 @@
 
         <?php
         include "connectionToDB.php";
+        if (isset($_POST['login'])){
+            header("Location: index.php");
+        }
         if (isset($_POST['register'])) {
             $username = $_POST["username"];
             $email = $_POST["email"]; 
