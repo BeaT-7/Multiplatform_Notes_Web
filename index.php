@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Multiplatform Notes
+        <title>Notes4G
         </title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -87,6 +87,13 @@
                         $_SESSION["user_email"] = $row['email'];
                         $_SESSION["user_pass"] = $row['password'];
                         header("Location: main.php"); 
+                    }else{
+                        ?>
+                    <div class="alert alert-danger text-center" role="alert">
+                    <h4 class="alert-heading">Something is wrong!</h4>
+                    <p>Username and / or password is incorrect! Try again!</p>
+                </div>
+                <?php
                     }
                 }else{
                     ?>

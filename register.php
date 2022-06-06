@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Multiplatform Notes
+        <title>Notes4G
         </title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -80,15 +80,27 @@
         $checkUsername = "SELECT * FROM users WHERE username = '$username';";
         $checkEmail = "SELECT * FROM users WHERE email = '$email';";
         $addNewUser = "INSERT INTO users(username, email, password) VALUES ('$username', '$email', '$hash');";
-            $checUsernameRes = $connection->prepare($checkUsername);
-            $checUsernameRes->execute();
-            $checkUsernameRow = $checUsernameRes->fetch(PDO::FETCH_ASSOC);
+        $getUserIdSQL = "SELECT id FROM users WHERE username = '$username';"; 
+        $registerNewGroupSQL = "INSERT INTO sql11496494.groups(owner, group_name) VALUES (?, 'Default')";
+            $checkUsernameRes = $connection->prepare($checkUsername);
+            $checkUsernameRes->execute();
+            $checkUsernameRow = $checkUsernameRes->fetch(PDO::FETCH_ASSOC);
             $checkEmailRes = $connection->prepare($checkEmail);
             $checkEmailRes->execute();
             $checkEmailRow = $checkEmailRes->fetch(PDO::FETCH_ASSOC); 
             if(!$checkUsernameRow && !$checkEmailRow){ // katram no pārbaudēm jeb selectiem nav rezultāts, tapēc var reģistrēt lietotāju
-              #  $addUser = $connection ->prepare($addNewUser);
-               # $addUser->execute(); 
+                $addUser = $connection ->prepare($addNewUser);
+                $addUser->execute();
+               
+                $getId = $connection ->prepare($getUserIdSQL);
+                $getId->execute(); 
+                $id = $getId ->fetch(PDO::FETCH_ASSOC);
+
+                $addGroupUser = $connection -> prepare($registerNewGroupSQL);
+                $addGroupUser -> bindParam(1, $id['id'],PDO::PARAM_INT);
+                $addGroupUser->execute(); 
+                
+
                 ?>
                 <div class="alert alert-success text-center" role="alert">
                     <h4 class="alert-heading">Account registered!</h4>

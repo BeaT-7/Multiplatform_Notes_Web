@@ -4,8 +4,12 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Multiplatform Notes
+        <title>Notes4G
         </title>
+        <script type="text/javascript" src="//js.nicedit.com/nicEdit-latest.js"></script> 
+        <script type="text/javascript">
+            bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+        </script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
@@ -19,6 +23,7 @@
     // gets all groups and notes on page load
     getAllGroups($connection, $_SESSION["user_id"]);
     getAllNotes($connection);
+    
     
     // log out button
     if (isset($_POST["logout"])){
@@ -100,17 +105,22 @@
 
     // !!pagaidu!! - dabū piezīmes ID, kad uz tās uzspiež
     if (isset($_POST["Note"])){
-        echo $_POST["id_note"];
+        $_SESSION["current_note"] = $_POST["id_note"];
+        $_SESSION["current_group"] = $_POST["id_group"];
+        $_SESSION["groups"] = $groups;
+        header("Location: editor.php");
     }
     ?>
 
 <body>
     <!-- navigation bar -->
     <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid">
+        <div class="d-flex container-fluid">
             <button class="btn btn-dark border border-light text-center mt-2 mx-2" onclick="openForm()">New Group</button>
             <button class="btn btn-dark border border-light text-center mt-2 mx-2" onclick="openFormNote()">New Note</button>
-            <button class="btn btn-dark border border-light text-center mt-2 ms-auto"  name = "logout" type="submit">Log out!</button>
+            <form action="" method="post" class="ms-auto">
+                <button class="btn btn-dark border border-light text-center mt-2"  name = "logout" type="submit">Log out!</button>
+            </form>
         </div>
     </nav>
 
@@ -128,9 +138,10 @@
                     // creates buttons for each note in it's group
                     for ($j = 0; $j < count($groups[$i][3]); $j++){
                         ?>
-                        <form action="" method="post">
-                            <input type="hidden" name="id_note" value="<?php echo $groups[$i][3][$j][0] ?>" />
-                            <button class="btn btn-dark border border-light text-center noteBtn"  name = "Note" type="submit"><?php echo $groups[$i][3][$j][2] ?></button>
+                        <form method="post">
+                            <input type="hidden" name="id_note" value="<?php echo $j ?>" />
+                            <input type="hidden" name="id_group" value="<?php echo $i ?>" />
+                            <button class="btn btn-dark border border-light text-center noteBtn" name = "Note"><?php echo $groups[$i][3][$j][2] ?></button>
                         </form>
                         <?php
                     }
@@ -155,6 +166,7 @@
                     <label for="group" class="popupLabel"><b>Add To Group:</b></label>
                     <select name="groupSelect" class="mb-4">
                         <?php
+                        echo $groups[0][3][0][3];
                         foreach ($groups as $group){
                             ?><option value="<?php echo $group[0] ?>"><?php echo $group[2] ?></option><?php
                         }
@@ -163,8 +175,6 @@
                     <button type="submit" name="newNote" class="btn">Create</button>
                 </form>
             </div>
-            
-
 
             <script>
             // pop up window functions for hiding or showing them
@@ -184,6 +194,7 @@
                     document.getElementById("newNote").style.display = "block";
                 }   
             }
+
             </script>
         </div>
 
