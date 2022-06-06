@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Multiplatform Notes
+        <title>Notes4G
         </title>
         <script type="text/javascript" src="//js.nicedit.com/nicEdit-latest.js"></script> 
         <script type="text/javascript">
@@ -23,6 +23,7 @@
     // gets all groups and notes on page load
     getAllGroups($connection, $_SESSION["user_id"]);
     getAllNotes($connection);
+    
     
     // log out button
     if (isset($_POST["logout"])){
@@ -104,12 +105,10 @@
 
     // !!pagaidu!! - dabū piezīmes ID, kad uz tās uzspiež
     if (isset($_POST["Note"])){
-        echo $_POST["id_note"];
-        echo '<style type="text/css">
-        #editor {
-            display: block;
-        }
-        </style>';
+        $_SESSION["current_note"] = $_POST["id_note"];
+        $_SESSION["current_group"] = $_POST["id_group"];
+        $_SESSION["groups"] = $groups;
+        header("Location: editor.php");
     }
     ?>
 
@@ -140,7 +139,8 @@
                     for ($j = 0; $j < count($groups[$i][3]); $j++){
                         ?>
                         <form method="post">
-                            <input type="hidden" name="id_note" value="<?php echo $groups[$i][3][$j][0] ?>" />
+                            <input type="hidden" name="id_note" value="<?php echo $j ?>" />
+                            <input type="hidden" name="id_group" value="<?php echo $i ?>" />
                             <button class="btn btn-dark border border-light text-center noteBtn" name = "Note"><?php echo $groups[$i][3][$j][2] ?></button>
                         </form>
                         <?php
@@ -175,20 +175,6 @@
                     <button type="submit" name="newNote" class="btn">Create</button>
                 </form>
             </div>
-            <div class="form-popup-editor" id="editor">
-                <form action="" class="form-container-editor" method="post">
-                    <textarea name="editor" class="textEditor" value> <?php echo $groups[0][3][0][3]; ?> </textarea>
-                    <button type="submit" name="saveText" class="btn border-dark">Save</button>
-                </form>
-            </div>
-            
-
-            <?php
-            if (isset($_POST["saveText"])){
-                echo $_POST["area1"];
-            }
-            ?>
-
 
             <script>
             // pop up window functions for hiding or showing them
