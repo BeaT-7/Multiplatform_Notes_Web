@@ -14,7 +14,12 @@
             integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
         <link rel="stylesheet" type="text/css" href="style.css">
+        
     </head>
+    
+    <style>
+       <?php include "style.css"; ?> 
+    </style>
     <?php
     session_start();
     include "connectionToDB.php";
@@ -112,9 +117,9 @@
     }
     ?>
 
-<body>
+<body class="bodyEditMain">
     <!-- navigation bar -->
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark mb-2">
         <div class="d-flex container-fluid">
             <button class="btn btn-dark border border-light text-center mt-2 mx-2" onclick="openForm()">New Group</button>
             <button class="btn btn-dark border border-light text-center mt-2 mx-2" onclick="openFormNote()">New Note</button>
@@ -123,15 +128,16 @@
             </form>
         </div>
     </nav>
-
         <div>
             <?php
             // Group and note displaying
             for ($i = 0; $i < count($groups); $i++){
                 ?>
                 <!-- creates labels for each group -->
-                <div class="border border-dark border-3 bg-light groupLabel d-flex">
-                    <h4><?php echo $groups[$i][2] ?></h4>
+                <div >
+                    <form method="post" class="groupLabel d-flex">
+                        <h4 class="gLabelText"><?php echo $groups[$i][2] ?></h4>
+                    </form>
                 </div>
 
                 <div class="d-flex container-fluid"><?php
@@ -194,8 +200,11 @@
                     document.getElementById("newNote").style.display = "block";
                 }   
             }
-
+            function delGroup() {
+                confirm('Are you sure?');
+            }
             </script>
+
         </div>
 
     </body>
