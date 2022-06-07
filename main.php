@@ -200,9 +200,6 @@
                     document.getElementById("newNote").style.display = "block";
                 }   
             }
-            function delGroup() {
-                confirm('Are you sure?');
-            }
             </script>
 
         </div>
